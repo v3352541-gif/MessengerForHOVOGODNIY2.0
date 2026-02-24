@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MIMIgraf — Регистрация</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0e0f13;--surface:#16181f;--surface2:#1e2029;--border:#2a2d38;--accent:#6c63ff;--accent2:#ff6b9d;--text:#e8eaf0;--text-dim:#7c8098;--error:#ef4444;--success:#4ade80;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.18;animation:drift 12s ease-in-out infinite alternate;pointer-events:none;}
+.blob1{width:350px;height:350px;background:var(--accent2);top:-80px;right:-60px;}
+.blob2{width:300px;height:300px;background:var(--accent);bottom:-80px;left:-60px;animation-delay:-5s;}
+.blob3{width:200px;height:200px;background:#f59e0b;top:40%;right:30%;animation-delay:-2s;}
+@keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(25px,18px) scale(1.06);}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:28px;padding:44px 40px;width:400px;position:relative;z-index:1;animation:cardIn .4s cubic-bezier(.22,1,.36,1);}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
+.logo-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;box-shadow:0 8px 24px rgba(108,99,255,.35);flex-shrink:0;}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.5px;}
+h1{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;margin-bottom:6px;}
+.subtitle{color:var(--text-dim);font-size:14px;margin-bottom:28px;}
+.fg{margin-bottom:14px;}
+label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);font-weight:600;margin-bottom:6px;}
+input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.15);}
+input::placeholder{color:var(--text-dim);}
+input.valid{border-color:var(--success);}
+input.invalid{border-color:var(--error);}
+
+/* username field with @ prefix INSIDE the input visually */
+.username-wrap{position:relative;display:flex;align-items:center;}
+.at-sign{position:absolute;left:16px;color:var(--accent);font-size:15px;font-weight:600;pointer-events:none;z-index:1;line-height:1;}
+.username-wrap input{padding-left:30px;}
+
+.hint{font-size:12px;margin-top:4px;padding-left:4px;color:var(--text-dim);transition:color .2s;}
+.hint.err{color:var(--error);}
+.hint.ok{color:var(--success);}
+.strength-bar{display:flex;gap:4px;margin-top:6px;}
+.ss{height:3px;flex:1;border-radius:4px;background:var(--border);transition:background .3s;}
+.err-box{color:var(--error);font-size:13px;margin-bottom:12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:8px 12px;display:none;}
+.err-box.show{display:block;}
+.btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),#8b85ff);border:none;border-radius:14px;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px;transition:transform .15s,box-shadow .15s;}
+.btn:hover{transform:scale(1.02);box-shadow:0 6px 24px rgba(108,99,255,.4);}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn .sp{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+.btn.loading .lbl{display:none;}
+.btn.loading .sp{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.divider{text-align:center;color:var(--text-dim);font-size:13px;margin:20px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border);}
+.divider::before{left:0;}.divider::after{right:0;}
+.link-row{text-align:center;font-size:14px;color:var(--text-dim);}
+.link-row a{color:var(--accent);text-decoration:none;font-weight:500;}
+.link-row a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="card">
+  <div class="logo-row">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">MIMIgraf</span>
+  </div>
+  <h1>Создать аккаунт</h1>
+  <p class="subtitle">Быстро и бесплатно</p>
+  <div class="err-box" id="err"></div>
+  <div class="fg">
+    <label>Почта</label>
+    <input id="email" type="email" placeholder="you@example.com" oninput="vEmail()"/>
+    <div class="hint" id="h-email"></div>
+  </div>
+  <div class="fg">
+    <label>@Username</label>
+    <div class="username-wrap">
+      <span class="at-sign">@</span>
+      <input id="username" type="text" placeholder="myusername" oninput="vUser()" onblur="checkUser()"/>
+    </div>
+    <div class="hint" id="h-user">3–30 символов: буквы, цифры, _</div>
+  </div>
+  <div class="fg">
+    <label>Пароль</label>
+    <input id="password" type="password" placeholder="Минимум 6 символов" oninput="checkStr()"/>
+    <div class="strength-bar"><div class="ss" id="s1"></div><div class="ss" id="s2"></div><div class="ss" id="s3"></div><div class="ss" id="s4"></div></div>
+    <div class="hint" id="h-pass"></div>
+  </div>
+  <div class="fg">
+    <label>Повтор пароля</label>
+    <input id="pass2" type="password" placeholder="Повторите пароль" oninput="checkConf()"/>
+    <div class="hint" id="h-conf"></div>
+  </div>
+  <button class="btn" id="rbtn" onclick="register()">
+    <span class="lbl">Зарегистрироваться</span>
+    <div class="sp"></div>
+  </button>
+  <div class="divider">или</div>
+  <div class="link-row">Уже есть аккаунт? <a href="/login.html">Войти</a></div>
+</div>
+<script>
+function vEmail(){const v=document.getElementById('email').value.trim(),h=document.getElementById('h-email'),i=document.getElementById('email');if(!v){i.className='';h.textContent='';h.className='hint';return;}const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);i.className=ok?'valid':'invalid';h.textContent=ok?'':'Некорректный email';h.className='hint'+(ok?'':' err');}
+function vUser(){const v=document.getElementById('username').value.trim(),h=document.getElementById('h-user'),i=document.getElementById('username');if(!v){i.className='';h.textContent='3–30 символов: буквы, цифры, _';h.className='hint';return;}const ok=/^[a-zA-Z0-9_]{3,30}$/.test(v);i.className=ok?'':'invalid';h.textContent=ok?'Проверка…':'3–30 символов: буквы, цифры, _';h.className='hint'+(ok?'':' err');}
+async function checkUser(){const v=document.getElementById('username').value.trim(),h=document.getElementById('h-user'),i=document.getElementById('username');if(!/^[a-zA-Z0-9_]{3,30}$/.test(v))return;try{const r=await fetch(`/api/check-username?username=${encodeURIComponent(v)}`),d=await r.json();i.className=d.available?'valid':'invalid';h.textContent=d.available?'✓ Доступен':'✗ Занят';h.className='hint '+(d.available?'ok':'err');}catch{}}
+function checkStr(){const p=document.getElementById('password').value,segs=[document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3'),document.getElementById('s4')],h=document.getElementById('h-pass');segs.forEach(s=>s.style.background='var(--border)');let sc=0;if(p.length>=6)sc++;if(p.length>=10)sc++;if(/[A-Z]/.test(p)&&/[a-z]/.test(p))sc++;if(/[0-9!@#$%^&*]/.test(p))sc++;const colors=['#ef4444','#f97316','#eab308','#4ade80'],labels=['Слабый','Средний','Хороший','Надёжный'];for(let i=0;i<sc;i++)segs[i].style.background=colors[sc-1];h.textContent=p?labels[sc-1]||'':``;h.className='hint';}
+function checkConf(){const p=document.getElementById('password').value,p2=document.getElementById('pass2').value,h=document.getElementById('h-conf'),i=document.getElementById('pass2');if(!p2){i.className='';h.textContent='';h.className='hint';return;}const ok=p===p2;i.className=ok?'valid':'invalid';h.textContent=ok?'✓ Совпадает':'✗ Не совпадает';h.className='hint '+(ok?'ok':'err');}
+function showErr(m){const e=document.getElementById('err');e.textContent=m;e.classList.add('show');}
+async function register(){const email=document.getElementById('email').value.trim(),username=document.getElementById('username').value.trim(),password=document.getElementById('password').value,pass2=document.getElementById('pass2').value,btn=document.getElementById('rbtn');document.getElementById('err').classList.remove('show');if(!email||!username||!password||!pass2){showErr('Заполните все поля');return;}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Некорректный email');return;}if(!/^[a-zA-Z0-9_]{3,30}$/.test(username)){showErr('@Username: 3–30 символов');return;}if(password.length<6){showErr('Пароль минимум 6 символов');return;}if(password!==pass2){showErr('Пароли не совпадают');return;}btn.classList.add('loading');btn.disabled=true;try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,username,password,passwordConfirm:pass2}),credentials:'include'}),d=await r.json();if(r.ok)location.href='/main.html';else showErr(d.error||'Ошибка');}catch{showErr('Нет соединения');}finally{btn.classList.remove('loading');btn.disabled=false;}}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')register();});
+fetch('/api/me',{credentials:'include'}).then(r=>{if(r.ok)location.href='/main.html';});
+</script>
+</body>
+</html>

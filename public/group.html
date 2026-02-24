@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MIMIgraf — Группа</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+:root{--bg:#0e0f13;--surface:#16181f;--surface2:#1e2029;--border:#2a2d38;--accent:#6c63ff;--accent2:#ff6b9d;--text:#e8eaf0;--text-dim:#7c8098;--online:#4ade80;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;}
+#wrap{max-width:540px;margin:0 auto;padding:24px 16px;}
+.back-btn{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:14px;cursor:pointer;margin-bottom:24px;width:fit-content;border:none;background:none;font-family:var(--font-body);transition:color .15s;}
+.back-btn:hover{color:var(--accent);}
+/* group header card */
+.g-header{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:16px;}
+.g-av{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;object-fit:cover;display:block;}
+.g-av-ph{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:36px;color:#fff;}
+.g-name{font-family:var(--font-head);font-weight:800;font-size:22px;}
+.g-desc{color:var(--text-dim);font-size:13px;margin-top:6px;line-height:1.5;}
+.g-meta{font-size:12px;color:var(--text-dim);margin-top:8px;}
+/* sections */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);font-weight:600;margin-bottom:12px;}
+/* members */
+.member-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.member-row:last-child{border-bottom:none;}
+.m-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0;overflow:hidden;}
+.m-av img{width:38px;height:38px;object-fit:cover;}
+.m-info{flex:1;min-width:0;}
+.m-name{font-size:14px;font-weight:500;}
+.m-user{font-size:12px;color:var(--text-dim);}
+.m-badge{font-size:11px;color:var(--accent);font-weight:600;flex-shrink:0;}
+.m-del{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:#ef4444;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s;flex-shrink:0;}
+.m-del:hover{border-color:#ef4444;background:rgba(239,68,68,.1);}
+/* add member */
+.add-wrap{display:flex;gap:8px;margin-top:8px;}
+.add-wrap input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;}
+.add-wrap input:focus{border-color:var(--accent);}
+.add-wrap input::placeholder{color:var(--text-dim);}
+.add-btn{padding:8px 16px;background:linear-gradient(135deg,var(--accent),#8b85ff);border:none;border-radius:10px;color:#fff;font-family:var(--font-body);font-size:14px;cursor:pointer;}
+/* settings form */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);font-weight:600;margin-bottom:5px;}
+.fg input,.fg textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 13px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;}
+.fg input:focus,.fg textarea:focus{border-color:var(--accent);}
+.fg textarea{resize:vertical;min-height:70px;}
+.av-up{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.av-up-img{width:60px;height:60px;border-radius:50%;object-fit:cover;}
+.av-up-ph{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:var(--font-head);color:#fff;}
+.ubtn{padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);cursor:pointer;font-family:var(--font-body);font-size:13px;}
+.sbtn{padding:10px 22px;background:linear-gradient(135deg,var(--accent),#8b85ff);border:none;border-radius:12px;color:#fff;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;}
+/* danger */
+.leave-btn{width:100%;padding:12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;color:#ef4444;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s;}
+.leave-btn:hover{background:rgba(239,68,68,.2);}
+/* toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:9px 18px;font-size:14px;transition:transform .25s;z-index:999;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Назад
+  </button>
+
+  <!-- Group info header -->
+  <div class="g-header">
+    <div id="g-av-ph" class="g-av-ph">?</div>
+    <img id="g-av-img" class="g-av" src="" style="display:none"/>
+    <div class="g-name" id="g-name-display">Группа</div>
+    <div class="g-desc" id="g-desc-display"></div>
+    <div class="g-meta" id="g-meta"></div>
+  </div>
+
+  <!-- Members -->
+  <div class="section">
+    <div class="section-title">Участники</div>
+    <div id="members-list"></div>
+    <div class="add-wrap" id="add-wrap" style="display:none">
+      <input id="add-input" type="text" placeholder="@username"/>
+      <button class="add-btn" onclick="addMember()">Добавить</button>
+    </div>
+  </div>
+
+  <!-- Settings (only for creator) -->
+  <div class="section" id="settings-section" style="display:none">
+    <div class="section-title">Настройки группы</div>
+    <div class="av-up">
+      <div id="set-av-ph" class="av-up-ph">?</div>
+      <img id="set-av-img" class="av-up-img" src="" style="display:none"/>
+      <label class="ubtn">Изменить фото<input type="file" accept="image/*" style="display:none" onchange="uploadGrpAv(this)"/></label>
+    </div>
+    <div class="fg"><label>Название</label><input id="set-name" type="text"/></div>
+    <div class="fg"><label>Описание</label><textarea id="set-desc"></textarea></div>
+    <button class="sbtn" onclick="saveSettings()">Сохранить</button>
+  </div>
+
+  <!-- Leave button -->
+  <button class="leave-btn" id="leave-btn" onclick="leaveGroup()">Выйти из группы</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const socket = io();
+const params = new URLSearchParams(location.search);
+const groupId = params.get('id');
+let me = null, group = null;
+
+async function init() {
+  const r = await fetch('/api/me', { credentials: 'include' });
+  if (!r.ok) { location.href = '/login.html'; return; }
+  me = await r.json();
+
+  const gr = await fetch(`/api/groups/${groupId}`, { credentials: 'include' });
+  if (!gr.ok) { alert('Группа не найдена'); history.back(); return; }
+  group = await gr.json();
+
+  renderHeader();
+  renderMembers();
+
+  const isCreator = group.creatorId === me.id;
+  if (isCreator) {
+    document.getElementById('settings-section').style.display = 'block';
+    document.getElementById('set-name').value = group.name;
+    document.getElementById('set-desc').value = group.description || '';
+    refreshSetAv();
+  }
+  document.getElementById('add-wrap').style.display = 'flex';
+  socket.emit('auth', { userId: me.id });
+}
+
+function renderHeader() {
+  const ph = document.getElementById('g-av-ph');
+  const img = document.getElementById('g-av-img');
+  if (group.avatar) { img.src = group.avatar; img.style.display = 'block'; ph.style.display = 'none'; }
+  else { ph.textContent = (group.name || '?')[0].toUpperCase(); ph.style.display = 'flex'; img.style.display = 'none'; }
+  document.getElementById('g-name-display').textContent = group.name;
+  document.getElementById('g-desc-display').textContent = group.description || '';
+  document.getElementById('g-meta').textContent = `${group.members.length} участников`;
+}
+
+function refreshSetAv() {
+  const ph = document.getElementById('set-av-ph');
+  const img = document.getElementById('set-av-img');
+  if (group.avatar) { img.src = group.avatar; img.style.display = 'block'; ph.style.display = 'none'; }
+  else { ph.textContent = (group.name || '?')[0].toUpperCase(); ph.style.display = 'flex'; img.style.display = 'none'; }
+}
+
+function renderMembers() {
+  const list = document.getElementById('members-list');
+  list.innerHTML = '';
+  const isCreator = group.creatorId === me.id;
+  group.members.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'member-row';
+    row.innerHTML = `
+      <div class="m-av">${m.avatar ? `<img src="${m.avatar}"/>` : m.name[0].toUpperCase()}</div>
+      <div class="m-info"><div class="m-name">${esc(m.name)}</div><div class="m-user">@${esc(m.username)}</div></div>
+      <div class="m-badge">${m.id === group.creatorId ? 'Создатель' : ''}</div>
+      ${isCreator && m.id !== me.id ? `<button class="m-del" onclick="removeMember('${m.id}')" title="Удалить">✕</button>` : ''}
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function addMember() {
+  const username = document.getElementById('add-input').value.trim().replace('@', '');
+  if (!username) return;
+  const r = await fetch(`/api/groups/${groupId}/members`, {
+    method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username })
+  });
+  const d = await r.json();
+  if (r.ok) { group = d; renderHeader(); renderMembers(); document.getElementById('add-input').value = ''; toast('Добавлен'); }
+  else toast(d.error || 'Ошибка');
+}
+
+async function removeMember(userId) {
+  if (!confirm('Удалить участника?')) return;
+  const r = await fetch(`/api/groups/${groupId}/members/${userId}`, { method: 'DELETE', credentials: 'include' });
+  const d = await r.json();
+  if (r.ok) { group = d; renderHeader(); renderMembers(); toast('Удалён'); }
+  else toast(d.error || 'Ошибка');
+}
+
+async function leaveGroup() {
+  if (!confirm('Выйти из группы?')) return;
+  const r = await fetch(`/api/groups/${groupId}/leave`, { method: 'POST', credentials: 'include' });
+  if (r.ok) { location.href = '/main.html'; }
+  else { const d = await r.json(); toast(d.error || 'Ошибка'); }
+}
+
+function uploadGrpAv(inp) {
+  if (!inp.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    const r = await fetch(`/api/groups/${groupId}`, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ avatar: ev.target.result })
+    });
+    if (r.ok) { const d = await r.json(); group = d; renderHeader(); refreshSetAv(); toast('Фото обновлено'); }
+  };
+  reader.readAsDataURL(inp.files[0]);
+}
+
+async function saveSettings() {
+  const name = document.getElementById('set-name').value.trim();
+  const description = document.getElementById('set-desc').value.trim();
+  if (!name) { toast('Введите название'); return; }
+  const r = await fetch(`/api/groups/${groupId}`, {
+    method: 'PATCH', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, description })
+  });
+  if (r.ok) { const d = await r.json(); group = d; renderHeader(); toast('Сохранено ✓'); }
+  else toast('Ошибка');
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+
+init();
+</script>
+</body>
+</html>

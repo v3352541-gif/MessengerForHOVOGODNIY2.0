@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MIMIgraf — Вход</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0e0f13;
+  --surface: #16181f;
+  --surface2: #1e2029;
+  --border: #2a2d38;
+  --accent: #6c63ff;
+  --accent2: #ff6b9d;
+  --text: #e8eaf0;
+  --text-dim: #7c8098;
+  --error: #ef4444;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* animated bg blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .18;
+  animation: drift 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.blob1 { width: 400px; height: 400px; background: var(--accent); top: -100px; left: -100px; animation-delay: 0s; }
+.blob2 { width: 300px; height: 300px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -6s; }
+.blob3 { width: 200px; height: 200px; background: #06b6d4; top: 50%; left: 55%; animation-delay: -3s; }
+
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(30px, 20px) scale(1.08); }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 44px 40px;
+  width: 380px;
+  position: relative;
+  z-index: 1;
+  animation: cardIn .4s cubic-bezier(.22,1,.36,1);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.logo-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(108,99,255,.35);
+  flex-shrink: 0;
+}
+.logo-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -.5px;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+.subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
+
+.form-group { margin-bottom: 16px; }
+label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,99,255,.15);
+}
+input::placeholder { color: var(--text-dim); }
+
+.error-msg {
+  color: var(--error);
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 12px;
+  display: none;
+}
+.error-msg.show { display: block; }
+
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--accent), #8b85ff);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover { transform: scale(1.02); box-shadow: 0 6px 24px rgba(108,99,255,.4); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.btn-primary .spinner {
+  display: none;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin: 0 auto;
+}
+.btn-primary.loading .btn-label { display: none; }
+.btn-primary.loading .spinner { display: block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.divider { text-align: center; color: var(--text-dim); font-size: 13px; margin: 20px 0; position: relative; }
+.divider::before, .divider::after {
+  content: '';
+  position: absolute; top: 50%;
+  width: 40%; height: 1px; background: var(--border);
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.link-row { text-align: center; font-size: 14px; color: var(--text-dim); }
+.link-row a { color: var(--accent); text-decoration: none; font-weight: 500; }
+.link-row a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="card">
+  <div class="logo-row">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">MIMIgraf</span>
+  </div>
+
+  <h1>С возвращением</h1>
+  <p class="subtitle">Войдите в свой аккаунт</p>
+
+  <div class="form-group">
+    <label>Почта</label>
+    <input id="email" type="email" placeholder="you@example.com" autocomplete="email"/>
+  </div>
+  <div class="form-group">
+    <label>Пароль</label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password"/>
+  </div>
+
+  <div class="error-msg" id="error-msg">Неверный email или пароль</div>
+
+  <button class="btn-primary" id="login-btn" onclick="login()">
+    <span class="btn-label">Войти</span>
+    <div class="spinner"></div>
+  </button>
+
+  <div class="divider">или</div>
+  <div class="link-row">Нет аккаунта? <a href="/register.html">Зарегистрироваться</a></div>
+</div>
+
+<script>
+document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('error-msg');
+
+  err.classList.remove('show');
+  if (!email || !password) { err.textContent = 'Заполните все поля'; err.classList.add('show'); return; }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok) {
+      location.href = '/main.html';
+    } else {
+      err.textContent = data.error || 'Ошибка входа';
+      err.classList.add('show');
+    }
+  } catch {
+    err.textContent = 'Нет соединения с сервером';
+    err.classList.add('show');
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// redirect if already logged in
+fetch('/api/me', { credentials: 'include' }).then(r => { if (r.ok) location.href = '/main.html'; });
+</script>
+</body>
+</html>
